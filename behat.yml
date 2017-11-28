@@ -3,7 +3,7 @@
 default:
     extensions:
         Behat\MinkExtension\Extension:
-            base_url: http://en.wikipedia.org
+            base_url: http://magento_fork.localhost
             goutte: ~
             selenium2:             
                 browser: chrome
