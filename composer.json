@@ -1,0 +1,11 @@
+{
+    "name": "ianlessa/functional_tests",
+    "description": "Small project to study functional tests with Behat and Mink",
+    "authors": [
+        {
+            "name": "Ian Lessa",
+            "email": "ian.lessa1@gmail.com"
+        }
+    ],
+    "require": {}
+}
