@@ -90,6 +90,7 @@ class FeatureContext extends MinkContext
         if (null === $element) {
             throw new \InvalidArgumentException(sprintf('Could not find element'));
         }
+	//var_dump($element->getAttribute('title'));
         $element->click();
     }
 
