@@ -74,6 +74,88 @@ class FeatureContext extends MinkContext
 
     }
 
+    /**
+    * @When /^(?:|I )click in element "(?P<element>(?:[^"]|\\")*)"$/
+    */
+    public function clickInElement($element)
+    {
+        $session = $this->getSession();
+
+        $locator = $this->fixStepArgument($element);
+        $xpath = $session->getSelectorsHandler()->selectorToXpath('css', $locator);
+        $element = $this->getSession()->getPage()->find(
+            'xpath',
+            $xpath
+        );
+        if (null === $element) {
+            throw new \InvalidArgumentException(sprintf('Could not find element'));
+        }
+        $element->click();
+    }
+
+     /**
+     * @When /^(?:|I )wait for element "(?P<element>(?:[^"]|\\")*)" to appear$/
+     * @Then /^(?:|I )should see element "(?P<element>(?:[^"]|\\")*)" appear$/
+     * @param $element
+     * @throws \Exception
+     */
+    public function iWaitForElementToAppear($element)
+    {
+        $this->spin(function(FeatureContext $context) use ($element) {
+            try {
+                $context->assertElementOnPage($element);
+                return true;
+            }
+            catch(ResponseTextException $e) {
+                // NOOP
+            }
+            return false;
+        });
+    }
+    /**
+    * @when /^(?:|I )follow the element "(?P<element>(?:[^"]|\\")*)" href$/ 
+    */    
+    public function iFollowTheElementHref($element) {
+
+        $session = $this->getSession();
+ 
+        $locator = $this->fixStepArgument($element);
+        $xpath = $session->getSelectorsHandler()->selectorToXpath('css', $locator);
+        $element = $this->getSession()->getPage()->find(
+            'xpath',
+            $xpath
+        );
+        if (null === $element) {
+            throw new \InvalidArgumentException(sprintf('Could not find element'));
+        }
+	//var_dump($element);
+
+        $href = $element->getAttribute('href');
+        $this->visit($href);
+
+    
+    }
+
+    /**
+     * @When /^(?:|I )wait for text "(?P<text>(?:[^"]|\\")*)" to appear$/
+     * @Then /^(?:|I )should see "(?P<text>(?:[^"]|\\")*)" appear$/
+     * @param $text
+     * @throws \Exception
+     */
+    public function iWaitForTextToAppear($text)
+    {
+        $this->spin(function(FeatureContext $context) use ($text) {
+            try {
+                $context->assertPageContainsText($text);
+                return true;
+            }
+            catch(ResponseTextException $e) {
+                // NOOP
+            }
+            return false;
+        });
+    }
+
 
 }
 

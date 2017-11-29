@@ -3,3 +3,4 @@ bin/
 .idea/
 composer.lock
 features/*.swp
+features/bootstrap/*.swp

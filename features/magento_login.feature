@@ -1,7 +1,7 @@
 # features/magento_login.feature
 Feature: Login
   In order to see a user general panel
-  As a user magento usere
+  As a magento user
   I need to be able to login on magento
 
 
