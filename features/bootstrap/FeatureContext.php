@@ -15,8 +15,10 @@ use Behat\MinkExtension\Context\MinkContext;
  */
 class FeatureContext extends MinkContext
 {
+
+
     //based on example from http://docs.behat.org/en/v2.5/cookbook/using_spin_functions.html
-    public function spin ($lambda, $wait = 15)
+    public function spin ($lambda, $wait = 60)
     {
         for ($i = 0; $i < $wait; $i++)
         {
@@ -34,7 +36,7 @@ class FeatureContext extends MinkContext
         $backtrace = debug_backtrace();
 
         throw new Exception(
-            "Timeout thrown by " . $backtrace[1]['class'] . "::" . $backtrace[1]['function'] . "()\n"
+            "Timeout ($wait seconds) thrown by " . $backtrace[1]['class'] . "::" . $backtrace[1]['function'] . "()\n"
             //$backtrace[1]['file'] . ", line " . $backtrace[1]['line']
         );
     }
@@ -101,7 +103,7 @@ class FeatureContext extends MinkContext
      * @throws \Exception
      */
     public function iWaitForElementToAppear($element)
-    {
+    {     
         $this->spin(function(FeatureContext $context) use ($element) {
             try {
                 $context->assertElementOnPage($element);
@@ -113,6 +115,60 @@ class FeatureContext extends MinkContext
             return false;
         });
     }
+
+    /** 
+     * @When /^(?:|I )wait for element "(?P<element>(?:[^"]|\\")*)" to appear, for (?P<wait>(?:\d+)*) seconds$/
+     * @param $element
+     * @param $wait
+     * @throws \Exception
+     */
+    public function iWaitForElementToAppearForNSeconds($element,$wait)
+    {       
+        $this->spin(function(FeatureContext $context) use ($element) {
+            try {
+                $context->assertElementOnPage($element);
+                return true;
+            }
+            catch(ResponseTextException $e) {
+                // NOOP
+            }
+            return false;
+        },$wait);
+    }  
+
+     /**
+     * @When /^(?:|I )wait for element "(?P<element>(?:[^"]|\\")*)" to become visible$/
+     * @param $element
+     * @throws \Exception
+     */
+    public function iWaitForElementToBecomeVisible($element)
+    {
+        $session = $this->getSession();
+
+        $locator = $this->fixStepArgument($element);
+        $xpath = $session->getSelectorsHandler()->selectorToXpath('css', $locator);
+        $element = $this->getSession()->getPage()->find(
+            'xpath',
+            $xpath
+        );
+        if (null === $element) {
+            throw new \InvalidArgumentException(sprintf('Could not find element'));
+        }
+
+
+        $this->spin(function() use ($element) {
+            try {
+                return $element->isVisible();
+                //return true;
+            }
+            catch(ResponseTextException $e) {
+                // NOOP
+            }
+            return false;
+        });
+    }
+
+
     /**
     * @when /^(?:|I )follow the element "(?P<element>(?:[^"]|\\")*)" href$/ 
     */    
